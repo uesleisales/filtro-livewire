@@ -106,8 +106,6 @@ class ProductFilter extends Component
      */
     public function updatedSearchBuffer()
     {
-        // O debounce será implementado no frontend via JavaScript
-        // Este método serve para capturar mudanças no buffer
     }
     
     /**
@@ -131,7 +129,6 @@ class ProductFilter extends Component
         $this->selectedBrands = [];
         $this->resetPage();
         
-        // Emitir evento para atualizar URL
         $this->dispatch('filtersCleared');
     }
     
