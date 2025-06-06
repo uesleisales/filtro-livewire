@@ -18,7 +18,6 @@ class OptimizePerformance
     {
         $response = $next($request);
         
-        // Aplicar otimizações apenas para respostas HTML
         if ($this->shouldOptimize($request, $response)) {
             $this->addCacheHeaders($response);
             $this->addSecurityHeaders($response);

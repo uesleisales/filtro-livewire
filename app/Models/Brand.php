@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Str;
 
 class Brand extends Model
@@ -20,6 +21,13 @@ class Brand extends Model
         'description',
         'logo',
     ];
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => $value ? substr($value, 0, 255) : $value,
+        );
+    }
 
     /**
      * Boot the model.

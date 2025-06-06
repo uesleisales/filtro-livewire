@@ -6,13 +6,14 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FactoryTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function product_factory_creates_valid_product()
     {
         $category = Category::factory()->create();
@@ -28,7 +29,7 @@ class FactoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function product_factory_can_create_with_specific_attributes()
     {
         $brand = Brand::factory()->create();
@@ -41,13 +42,13 @@ class FactoryTest extends TestCase
             'category_id' => $category->id,
         ]);
 
-        $this->assertEquals('Test Product', $product->name);
+        $this->assertEquals('Custom Product', $product->name);
         $this->assertEquals(99.99, $product->price);
         $this->assertEquals($category->id, $product->category_id);
         $this->assertEquals($brand->id, $product->brand_id);
     }
 
-    /** @test */
+    #[Test]
     public function product_factory_can_create_without_brand()
     {
         $category = Category::factory()->create();
@@ -61,7 +62,7 @@ class FactoryTest extends TestCase
         $this->assertNull($product->brand);
     }
 
-    /** @test */
+    #[Test]
     public function product_factory_creates_multiple_products()
     {
         $products = Product::factory()->count(5)->create();
@@ -76,7 +77,7 @@ class FactoryTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function category_factory_creates_valid_category()
     {
         $category = Category::factory()->create();
@@ -89,7 +90,7 @@ class FactoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function category_factory_can_create_with_specific_attributes()
     {
         $category = Category::factory()->create([
@@ -101,7 +102,7 @@ class FactoryTest extends TestCase
         $this->assertEquals('Test Description', $category->description);
     }
 
-    /** @test */
+    #[Test]
     public function category_factory_creates_multiple_categories()
     {
         $categories = Category::factory()->count(3)->create();
@@ -114,7 +115,7 @@ class FactoryTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function brand_factory_creates_valid_brand()
     {
         $brand = Brand::factory()->create();
@@ -127,7 +128,7 @@ class FactoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function brand_factory_can_create_with_specific_attributes()
     {
         $brand = Brand::factory()->create([
@@ -139,7 +140,7 @@ class FactoryTest extends TestCase
         $this->assertEquals('Test Brand Description', $brand->description);
     }
 
-    /** @test */
+    #[Test]
     public function brand_factory_creates_multiple_brands()
     {
         $brands = Brand::factory()->count(4)->create();
@@ -152,7 +153,7 @@ class FactoryTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function factories_work_together_for_complete_product()
     {
         $category = Category::factory()->create(['name' => 'Electronics']);
@@ -169,7 +170,7 @@ class FactoryTest extends TestCase
         $this->assertEquals('Samsung', $product->brand->name);
     }
 
-    /** @test */
+    #[Test]
     public function product_factory_generates_realistic_prices()
     {
         $category = Category::factory()->create();
@@ -178,11 +179,11 @@ class FactoryTest extends TestCase
         foreach ($products as $product) {
             $this->assertGreaterThan(0, $product->price);
             $this->assertLessThan(10000, $product->price); // Assumindo preço máximo razoável
-            $this->assertIsFloat($product->price);
+            $this->assertIsString($product->price); // Com cast decimal:2, retorna string
         }
     }
 
-    /** @test */
+    #[Test]
     public function factories_create_unique_names_when_possible()
     {
         $categories = Category::factory()->count(5)->create();
@@ -199,7 +200,7 @@ class FactoryTest extends TestCase
         $this->assertGreaterThan(1, count(array_unique($productNames)));
     }
 
-    /** @test */
+    #[Test]
     public function product_factory_can_create_with_states()
     {
         // Teste para estados específicos da factory, se implementados

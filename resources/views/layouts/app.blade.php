@@ -20,36 +20,47 @@
     <!-- Custom Styles -->
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --info-color: #0dcaf0;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --light-color: #f8f9fa;
-            --dark-color: #212529;
+            --primary-color: #667eea;
+            --primary-dark: #5a67d8;
+            --secondary-color: #718096;
+            --success-color: #48bb78;
+            --info-color: #4299e1;
+            --warning-color: #ed8936;
+            --danger-color: #f56565;
+            --light-color: #f7fafc;
+            --dark-color: #2d3748;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         body {
             font-family: 'Figtree', sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             line-height: 1.6;
+            min-height: 100vh;
         }
 
         .navbar-brand {
-            font-weight: 600;
-            font-size: 1.5rem;
+            font-weight: 700;
+            font-size: 1.6rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .main-content {
-            min-height: calc(100vh - 120px);
+            min-height: calc(100vh - 140px);
+            padding: 2rem 0;
         }
 
         .footer {
-            background-color: var(--dark-color);
+            background: var(--gradient-primary);
             color: white;
-            padding: 2rem 0;
+            padding: 2.5rem 0;
             margin-top: auto;
+            box-shadow: var(--shadow-lg);
         }
 
         .card {
@@ -199,8 +210,8 @@
                             Sistema
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-tags me-2"></i>Categorias</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-copyright me-2"></i>Marcas</a></li>
+                            <li><a class="dropdown-item" href="{{ route('categories.index') }}"><i class="fas fa-tags me-2"></i>Categories</a></li>
+                            <li><a class="dropdown-item" href="{{ route('brands.index') }}"><i class="fas fa-copyright me-2"></i>Brands</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar me-2"></i>Relatórios</a></li>
                         </ul>

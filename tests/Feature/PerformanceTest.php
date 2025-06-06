@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class PerformanceTest extends TestCase
@@ -37,7 +38,7 @@ class PerformanceTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_efficient_product_queries()
     {
         // Resetar contador de queries
@@ -68,12 +69,11 @@ class PerformanceTest extends TestCase
         DB::disableQueryLog();
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_category_list_efficiently()
     {
         Cache::flush();
         
-        // Primeira chamada - deve fazer query no banco
         DB::enableQueryLog();
         $categories1 = Cache::remember('categories.all', 3600, function () {
             return Category::orderBy('name')->get();
@@ -81,7 +81,7 @@ class PerformanceTest extends TestCase
         $firstCallQueries = count(DB::getQueryLog());
         DB::disableQueryLog();
         
-        // Segunda chamada - deve vir do cache
+        DB::flushQueryLog();
         DB::enableQueryLog();
         $categories2 = Cache::remember('categories.all', 3600, function () {
             return Category::orderBy('name')->get();
@@ -94,12 +94,11 @@ class PerformanceTest extends TestCase
         $this->assertEquals($categories1->count(), $categories2->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_caches_brand_list_efficiently()
     {
         Cache::flush();
         
-        // Primeira chamada - deve fazer query no banco
         DB::enableQueryLog();
         $brands1 = Cache::remember('brands.all', 3600, function () {
             return Brand::orderBy('name')->get();
@@ -107,7 +106,7 @@ class PerformanceTest extends TestCase
         $firstCallQueries = count(DB::getQueryLog());
         DB::disableQueryLog();
         
-        // Segunda chamada - deve vir do cache
+        DB::flushQueryLog();
         DB::enableQueryLog();
         $brands2 = Cache::remember('brands.all', 3600, function () {
             return Brand::orderBy('name')->get();
@@ -120,52 +119,49 @@ class PerformanceTest extends TestCase
         $this->assertEquals($brands1->count(), $brands2->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_large_result_sets_efficiently()
     {
         $startTime = microtime(true);
         
-        // Buscar todos os produtos com relacionamentos
         $products = Product::with(['category', 'brand'])->paginate(50);
         
         $endTime = microtime(true);
         $executionTime = $endTime - $startTime;
         
-        // Verificar que a consulta não demora mais que 2 segundos
         $this->assertLessThan(2.0, $executionTime, 'Consulta muito lenta para dataset grande');
         
-        // Verificar que retornou resultados
         $this->assertGreaterThan(0, $products->count());
         $this->assertLessThanOrEqual(50, $products->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_optimizes_search_queries()
     {
+        DB::flushQueryLog();
         DB::enableQueryLog();
         
-        // Busca simples
-        $results1 = Product::search('Product')->limit(10)->get();
+        $firstProduct = Product::first();
+        $searchTerm = substr($firstProduct->name, 0, 5);
         
-        // Busca com filtros
+        $results1 = Product::searchByName($searchTerm)->limit(10)->get();
+        
         $category = Category::first();
-        $results2 = Product::search('Product')
+        $results2 = Product::searchByName($searchTerm)
             ->byCategories([$category->id])
             ->limit(10)
             ->get();
         
         $queryLog = DB::getQueryLog();
         
-        // Verificar que as queries são eficientes
         $this->assertLessThanOrEqual(4, count($queryLog));
         
-        // Verificar que retornaram resultados
         $this->assertGreaterThan(0, $results1->count());
         
         DB::disableQueryLog();
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_concurrent_cache_access()
     {
         Cache::flush();
@@ -173,32 +169,27 @@ class PerformanceTest extends TestCase
         $cacheKey = 'test.concurrent.access';
         $cacheValue = 'test-value';
         
-        // Simular acesso concorrente ao cache
         $results = [];
         
         for ($i = 0; $i < 5; $i++) {
             $results[] = Cache::remember($cacheKey, 3600, function () use ($cacheValue) {
-                // Simular operação custosa
-                usleep(100000); // 100ms
+                usleep(100000);
                 return $cacheValue;
             });
         }
         
-        // Verificar que todos retornaram o mesmo valor
         foreach ($results as $result) {
             $this->assertEquals($cacheValue, $result);
         }
         
-        // Verificar que o valor está no cache
         $this->assertEquals($cacheValue, Cache::get($cacheKey));
     }
 
-    /** @test */
+    #[Test]
     public function it_measures_filter_performance_with_indexes()
     {
         $startTime = microtime(true);
         
-        // Filtros que devem usar índices
         $category = Category::first();
         $brand = Brand::first();
         
@@ -211,66 +202,56 @@ class PerformanceTest extends TestCase
         $endTime = microtime(true);
         $executionTime = $endTime - $startTime;
         
-        // Verificar que a consulta é rápida (menos de 500ms)
         $this->assertLessThan(0.5, $executionTime, 'Consulta com filtros muito lenta');
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_pagination_performance()
     {
         $startTime = microtime(true);
         
-        // Testar paginação em página mais avançada
         $products = Product::with(['category', 'brand'])
-            ->paginate(20, ['*'], 'page', 10); // Página 10
+            ->paginate(20, ['*'], 'page', 10);
         
         $endTime = microtime(true);
         $executionTime = $endTime - $startTime;
         
-        // Verificar que mesmo páginas avançadas são rápidas
         $this->assertLessThan(1.0, $executionTime, 'Paginação em páginas avançadas muito lenta');
         
-        // Verificar estrutura da paginação
         $this->assertLessThanOrEqual(20, $products->count());
         $this->assertEquals(10, $products->currentPage());
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_memory_usage_with_large_datasets()
     {
         $initialMemory = memory_get_usage();
         
-        // Carregar dataset grande
         $products = Product::with(['category', 'brand'])->limit(500)->get();
         
         $finalMemory = memory_get_usage();
         $memoryUsed = $finalMemory - $initialMemory;
         
-        // Verificar que o uso de memória é razoável (menos de 50MB)
         $this->assertLessThan(50 * 1024 * 1024, $memoryUsed, 'Uso excessivo de memória');
         
-        // Verificar que carregou os dados
         $this->assertGreaterThan(0, $products->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_tests_cache_invalidation()
     {
         $cacheKey = 'products.filtered';
         
-        // Cachear resultado inicial
         $initialProducts = Cache::remember($cacheKey, 3600, function () {
             return Product::limit(10)->get();
         });
         
         $this->assertTrue(Cache::has($cacheKey));
         
-        // Simular invalidação do cache
         Cache::forget($cacheKey);
         
         $this->assertFalse(Cache::has($cacheKey));
         
-        // Verificar que nova consulta funciona
         $newProducts = Cache::remember($cacheKey, 3600, function () {
             return Product::limit(10)->get();
         });

@@ -36,6 +36,16 @@ class Product extends Model
     ];
 
     /**
+     * Set the product's name.
+     */
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            set: fn (?string $value) => $value ? substr($value, 0, 255) : $value,
+        );
+    }
+
+    /**
      * Get the category that owns the product.
      */
     public function category(): BelongsTo
@@ -74,6 +84,14 @@ class Product extends Model
     }
 
     /**
+     * Scope a query to search products.
+     */
+    public function scopeSearch(Builder $query, ?string $search): Builder
+    {
+        return $this->scopeSearchByName($query, $search);
+    }
+
+    /**
      * Scope a query to filter by categories.
      */
     public function scopeFilterByCategories(Builder $query, array $categoryIds): Builder
@@ -86,6 +104,14 @@ class Product extends Model
     }
 
     /**
+     * Scope a query to filter by categories (alias).
+     */
+    public function scopeByCategories(Builder $query, array $categoryIds): Builder
+    {
+        return $this->scopeFilterByCategories($query, $categoryIds);
+    }
+
+    /**
      * Scope a query to filter by brands.
      */
     public function scopeFilterByBrands(Builder $query, array $brandIds): Builder
@@ -95,6 +121,14 @@ class Product extends Model
         }
 
         return $query->whereIn('brand_id', $brandIds);
+    }
+
+    /**
+     * Scope a query to filter by brands (alias).
+     */
+    public function scopeByBrands(Builder $query, array $brandIds): Builder
+    {
+        return $this->scopeFilterByBrands($query, $brandIds);
     }
 
     /**

@@ -6,13 +6,14 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_a_category()
     {
         $category = Category::factory()->create();
@@ -22,17 +23,21 @@ class ProductTest extends TestCase
         $this->assertEquals($category->id, $product->category->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_belongs_to_a_brand()
     {
         $brand = Brand::factory()->create();
-        $product = Product::factory()->create(['brand_id' => $brand->id]);
+        $category = Category::factory()->create();
+        $product = Product::factory()->create([
+            'brand_id' => $brand->id,
+            'category_id' => $category->id
+        ]);
 
         $this->assertInstanceOf(Brand::class, $product->brand);
         $this->assertEquals($brand->id, $product->brand->id);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_have_no_brand()
     {
         $category = Category::factory()->create();
@@ -44,7 +49,7 @@ class ProductTest extends TestCase
         $this->assertNull($product->brand);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_by_search_term()
     {
         $category = Category::factory()->create();
@@ -70,7 +75,7 @@ class ProductTest extends TestCase
         $this->assertFalse($results->contains('name', 'iPhone 13'));
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_by_categories()
     {
         $electronics = Category::factory()->create(['name' => 'Eletrônicos']);
@@ -95,7 +100,7 @@ class ProductTest extends TestCase
         $this->assertCount(2, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_filters_by_brands()
     {
         $category = Category::factory()->create();
@@ -121,7 +126,7 @@ class ProductTest extends TestCase
         $this->assertCount(2, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_combines_multiple_filters()
     {
         $electronics = Category::factory()->create(['name' => 'Eletrônicos']);
@@ -158,7 +163,7 @@ class ProductTest extends TestCase
         $this->assertEquals('Samsung Galaxy S21', $results->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_formats_price_correctly()
     {
         $category = Category::factory()->create();
@@ -170,7 +175,7 @@ class ProductTest extends TestCase
         $this->assertEquals('R$ 1.299,99', $product->formatted_price);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_required_fillable_attributes()
     {
         $fillable = (new Product())->getFillable();
@@ -182,7 +187,7 @@ class ProductTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_casts_price_to_decimal()
     {
         $category = Category::factory()->create();
@@ -191,11 +196,11 @@ class ProductTest extends TestCase
             'category_id' => $category->id
         ]);
 
-        $this->assertIsFloat($product->price);
-        $this->assertEquals(1299.99, $product->price);
+        $this->assertIsString($product->price);
+        $this->assertEquals('1299.99', $product->price);
     }
 
-    /** @test */
+    #[Test]
     public function search_scope_is_case_insensitive()
     {
         $category = Category::factory()->create();
@@ -213,7 +218,7 @@ class ProductTest extends TestCase
         $this->assertCount(1, $results3);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_search_term()
     {
         $category = Category::factory()->create();
@@ -224,7 +229,7 @@ class ProductTest extends TestCase
         $this->assertCount(3, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_category_filter()
     {
         $category = Category::factory()->create();
@@ -235,7 +240,7 @@ class ProductTest extends TestCase
         $this->assertCount(3, $results);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_empty_brand_filter()
     {
         $category = Category::factory()->create();

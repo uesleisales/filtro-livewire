@@ -3,25 +3,30 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class BrandTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_has_many_products()
     {
         $brand = Brand::factory()->create();
-        $products = Product::factory()->count(3)->create(['brand_id' => $brand->id]);
+        $products = Product::factory()->count(3)->create([
+            'brand_id' => $brand->id,
+            'category_id' => \App\Models\Category::factory()->create()->id
+        ]);
 
         $this->assertCount(3, $brand->products);
         $this->assertInstanceOf(Product::class, $brand->products->first());
     }
 
-    /** @test */
+    #[Test]
     public function it_has_required_fillable_attributes()
     {
         $fillable = (new Brand())->getFillable();
@@ -33,7 +38,7 @@ class BrandTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_can_be_created_with_factory()
     {
         $brand = Brand::factory()->create([
@@ -49,7 +54,7 @@ class BrandTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_cascades_delete_to_products()
     {
         $brand = Brand::factory()->create();
@@ -71,7 +76,7 @@ class BrandTest extends TestCase
         $this->assertDatabaseMissing('brands', ['id' => $brand->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_unique_name_constraint()
     {
         Brand::factory()->create(['name' => 'Samsung']);
@@ -81,16 +86,20 @@ class BrandTest extends TestCase
         Brand::factory()->create(['name' => 'Samsung']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_count_products()
     {
         $brand = Brand::factory()->create();
-        Product::factory()->count(7)->create(['brand_id' => $brand->id]);
+        $category = \App\Models\Category::factory()->create();
+        Product::factory()->count(7)->create([
+            'brand_id' => $brand->id,
+            'category_id' => $category->id
+        ]);
 
         $this->assertEquals(7, $brand->products()->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_collection_when_no_products()
     {
         $brand = Brand::factory()->create();
@@ -99,7 +108,7 @@ class BrandTest extends TestCase
         $this->assertTrue($brand->products->isEmpty());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_find_brands_with_products()
     {
         $brandWithProducts = Brand::factory()->create(['name' => 'Com Produtos']);
@@ -117,7 +126,7 @@ class BrandTest extends TestCase
         $this->assertEquals('Com Produtos', $brandsWithProducts->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_order_by_name()
     {
         Brand::factory()->create(['name' => 'Zebra']);
@@ -130,15 +139,22 @@ class BrandTest extends TestCase
         $this->assertEquals('Zebra', $brands->last()->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_get_popular_brands()
     {
         $popularBrand = Brand::factory()->create(['name' => 'Popular']);
         $unpopularBrand = Brand::factory()->create(['name' => 'Unpopular']);
+        $category = \App\Models\Category::factory()->create();
         
         // Criar mais produtos para a marca popular
-        Product::factory()->count(5)->create(['brand_id' => $popularBrand->id]);
-        Product::factory()->count(1)->create(['brand_id' => $unpopularBrand->id]);
+        Product::factory()->count(5)->create([
+            'brand_id' => $popularBrand->id,
+            'category_id' => $category->id
+        ]);
+        Product::factory()->count(1)->create([
+            'brand_id' => $unpopularBrand->id,
+            'category_id' => $category->id
+        ]);
 
         $brands = Brand::withCount('products')
             ->orderBy('products_count', 'desc')
@@ -150,7 +166,7 @@ class BrandTest extends TestCase
         $this->assertEquals(1, $brands->last()->products_count);
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_null_description()
     {
         $brand = Brand::factory()->create([
@@ -162,7 +178,7 @@ class BrandTest extends TestCase
         $this->assertNull($brand->description);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_search_by_name()
     {
         Brand::factory()->create(['name' => 'Samsung Electronics']);

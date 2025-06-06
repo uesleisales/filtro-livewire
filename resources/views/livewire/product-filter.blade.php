@@ -1,14 +1,6 @@
-<div class="container-fluid py-4">
-    {{-- Header com título e controles --}}
+<div>
     <div class="row mb-4">
-        <div class="col-md-8">
-            <h2 class="h3 mb-0 text-gray-800">
-                <i class="fas fa-search me-2"></i>
-                Catálogo de Produtos
-            </h2>
-            <p class="text-muted mb-0">Encontre produtos usando os filtros abaixo</p>
-        </div>
-        <div class="col-md-4 text-end">
+        <div class="col-md-12 text-end">
             <button 
                 wire:click="toggleFilters" 
                 class="btn btn-outline-primary btn-sm"
@@ -20,7 +12,6 @@
         </div>
     </div>
 
-    {{-- Seção de Filtros --}}
     @if($showFilters)
     <div class="card shadow-sm mb-4" wire:transition>
         <div class="card-header bg-light">
@@ -70,7 +61,6 @@
                     <small class="text-muted">A busca será aplicada automaticamente após parar de digitar</small>
                 </div>
 
-                {{-- Filtro por categorias --}}
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">
                         <i class="fas fa-tags me-1"></i>
@@ -100,7 +90,6 @@
                     </div>
                 </div>
 
-                {{-- Filtro por marcas --}}
                 <div class="col-md-6">
                     <label class="form-label fw-semibold">
                         <i class="fas fa-copyright me-1"></i>
@@ -134,7 +123,6 @@
     </div>
     @endif
 
-    {{-- Resultados --}}
     <div class="row">
         <div class="col-12">
             {{-- Header dos resultados --}}
@@ -158,7 +146,6 @@
                 </div>
                 
                 <div class="d-flex gap-2 align-items-center">
-                    <!-- Seletor de itens por página -->
                     <div class="d-flex align-items-center">
                         <label for="perPage" class="form-label me-2 mb-0 text-nowrap">Mostrar:</label>
                         <select 
@@ -184,7 +171,6 @@
                         </button>
                     @endif
                     
-                    <!-- Botão para compartilhar filtros -->
                     <button 
                         class="btn btn-outline-info btn-sm"
                         onclick="copyFilterUrl()"
@@ -195,7 +181,6 @@
                 </div>
             </div>
 
-            {{-- Loading state --}}
             <div wire:loading class="text-center py-4">
                 <div class="spinner-border text-primary" role="status">
                     <span class="visually-hidden">Carregando...</span>
@@ -203,7 +188,6 @@
                 <p class="mt-2 text-muted">Aplicando filtros...</p>
             </div>
 
-            {{-- Grid de produtos --}}
             <div wire:loading.remove>
                 @if($products->count() > 0)
                     <div class="row g-4">
@@ -238,12 +222,12 @@
                                         {{-- Informações do produto --}}
                                         <div class="mb-2">
                                             <small class="text-muted d-block">
-                                                <i class="fas fa-tag me-1"></i>
-                                                {{ $product->category->name }}
+                                                <i class="fas fa-tags me-1"></i>
+                                                {{ $product->category ? $product->category->name : 'Sem categoria' }}
                                             </small>
                                             <small class="text-muted d-block">
                                                 <i class="fas fa-copyright me-1"></i>
-                                                {{ $product->brand->name }}
+                                                {{ $product->brand ? $product->brand->name : 'Sem marca' }}
                                             </small>
                                             <small class="text-muted d-block">
                                                 <i class="fas fa-barcode me-1"></i>
@@ -278,7 +262,6 @@
                         </div>
                     </div>
                     
-                    {{-- Informações sobre URL persistente --}}
                     @if($hasActiveFilters)
                     <div class="mt-3 p-3 bg-light rounded">
                         <p class="mb-1"><i class="fas fa-link me-2"></i><strong>Link permanente com filtros aplicados:</strong></p>
@@ -292,7 +275,6 @@
                     </div>
                     @endif
                 @else
-                    {{-- Nenhum produto encontrado --}}
                     <div class="text-center py-5">
                         <div class="mb-3">
                             <i class="fas fa-search fa-3x text-muted"></i>
@@ -323,18 +305,14 @@
 </div>
 
 @push('scripts')
-{{-- Scripts customizados --}}
 <script>
-    // Função para copiar link com filtros
     function copyFiltersLink() {
         const urlParams = new URLSearchParams(window.location.search);
         const currentUrl = window.location.origin + window.location.pathname;
         
-        // Se há parâmetros, incluir na URL
         if (urlParams.toString()) {
             const fullUrl = currentUrl + '?' + urlParams.toString();
             
-            // Copiar para clipboard
             navigator.clipboard.writeText(fullUrl).then(() => {
                 // Mostrar toast de sucesso
                 const toast = document.createElement('div');
@@ -354,12 +332,10 @@
                 `;
                 document.body.appendChild(toast);
                 
-                // Remover toast após 3 segundos
                 setTimeout(() => {
                     toast.remove();
                 }, 3000);
             }).catch(() => {
-                // Fallback para navegadores mais antigos
                 const tempInput = document.createElement('input');
                 tempInput.value = fullUrl;
                 document.body.appendChild(tempInput);
@@ -367,7 +343,6 @@
                 document.execCommand('copy');
                 document.body.removeChild(tempInput);
                 
-                // Mostrar toast
                 const toast = document.createElement('div');
                 toast.className = 'position-fixed bottom-0 end-0 p-3';
                 toast.style.zIndex = '5';
@@ -385,13 +360,11 @@
                 `;
                 document.body.appendChild(toast);
                 
-                // Remover toast após 3 segundos
                 setTimeout(() => {
                     toast.remove();
                 }, 3000);
             });
         } else {
-            // Se não houver input (caso de nenhum filtro ativo), copiar URL atual
             const tempInput = document.createElement('input');
             tempInput.value = window.location.href;
             document.body.appendChild(tempInput);
@@ -399,7 +372,6 @@
             document.execCommand('copy');
             document.body.removeChild(tempInput);
             
-            // Mostrar toast
             const toast = document.createElement('div');
             toast.className = 'position-fixed bottom-0 end-0 p-3';
             toast.style.zIndex = '5';
@@ -417,14 +389,12 @@
             `;
             document.body.appendChild(toast);
             
-            // Remover toast após 3 segundos
             setTimeout(() => {
                 toast.remove();
             }, 3000);
         }
     }
     
-    // Inicializar listeners para eventos Livewire
     document.addEventListener('livewire:initialized', () => {
         // Atualizar URL no histórico quando filtros mudarem
         Livewire.on('filtersApplied', () => {
@@ -436,7 +406,6 @@
             }, 100);
         });
         
-        // Limpar URL quando filtros forem resetados
         Livewire.on('filtersCleared', () => {
             document.title = 'Todos os Produtos - Filtros de Produtos';
         });
@@ -445,7 +414,6 @@
 @endpush
 
 @push('styles')
-{{-- Estilos customizados --}}
 <style>
 .product-card {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;

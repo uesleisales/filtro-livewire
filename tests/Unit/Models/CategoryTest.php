@@ -5,13 +5,14 @@ namespace Tests\Unit\Models;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class CategoryTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_has_many_products()
     {
         $category = Category::factory()->create();
@@ -21,7 +22,7 @@ class CategoryTest extends TestCase
         $this->assertInstanceOf(Product::class, $category->products->first());
     }
 
-    /** @test */
+    #[Test]
     public function it_has_required_fillable_attributes()
     {
         $fillable = (new Category())->getFillable();
@@ -33,7 +34,7 @@ class CategoryTest extends TestCase
         }
     }
 
-    /** @test */
+    #[Test]
     public function it_can_be_created_with_factory()
     {
         $category = Category::factory()->create([
@@ -49,7 +50,7 @@ class CategoryTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_cascades_delete_to_products()
     {
         $category = Category::factory()->create();
@@ -64,7 +65,7 @@ class CategoryTest extends TestCase
         $this->assertDatabaseMissing('categories', ['id' => $category->id]);
     }
 
-    /** @test */
+    #[Test]
     public function it_has_unique_name_constraint()
     {
         Category::factory()->create(['name' => 'Eletrônicos']);
@@ -74,7 +75,7 @@ class CategoryTest extends TestCase
         Category::factory()->create(['name' => 'Eletrônicos']);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_count_products()
     {
         $category = Category::factory()->create();
@@ -83,7 +84,7 @@ class CategoryTest extends TestCase
         $this->assertEquals(5, $category->products()->count());
     }
 
-    /** @test */
+    #[Test]
     public function it_returns_empty_collection_when_no_products()
     {
         $category = Category::factory()->create();
@@ -92,7 +93,7 @@ class CategoryTest extends TestCase
         $this->assertTrue($category->products->isEmpty());
     }
 
-    /** @test */
+    #[Test]
     public function it_can_find_categories_with_products()
     {
         $categoryWithProducts = Category::factory()->create(['name' => 'Com Produtos']);
@@ -106,7 +107,7 @@ class CategoryTest extends TestCase
         $this->assertEquals('Com Produtos', $categoriesWithProducts->first()->name);
     }
 
-    /** @test */
+    #[Test]
     public function it_can_order_by_name()
     {
         Category::factory()->create(['name' => 'Zebra']);

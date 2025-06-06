@@ -19,7 +19,6 @@
             </div>
         </div>
         
-        {{-- Links de paginação --}}
         <ul class="pagination pagination-custom justify-content-center mb-0">
             {{-- Link para primeira página --}}
             @if ($paginator->onFirstPage())
@@ -36,7 +35,6 @@
                 </li>
             @endif
 
-            {{-- Link para página anterior --}}
             @if ($paginator->onFirstPage())
                 <li class="page-item disabled" aria-disabled="true">
                     <span class="page-link">
@@ -51,16 +49,13 @@
                 </li>
             @endif
 
-            {{-- Links das páginas --}}
             @foreach ($elements as $element)
-                {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
                     <li class="page-item disabled" aria-disabled="true">
                         <span class="page-link">{{ $element }}</span>
                     </li>
                 @endif
 
-                {{-- Array Of Links --}}
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
@@ -78,7 +73,6 @@
                 @endif
             @endforeach
 
-            {{-- Link para próxima página --}}
             @if ($paginator->hasMorePages())
                 <li class="page-item">
                     <button type="button" class="page-link" wire:click="nextPage" rel="next">
@@ -93,7 +87,6 @@
                 </li>
             @endif
 
-            {{-- Link para última página --}}
             @if ($paginator->hasMorePages())
                 <li class="page-item">
                     <button type="button" class="page-link" wire:click="gotoPage({{ $paginator->lastPage() }})" rel="last">

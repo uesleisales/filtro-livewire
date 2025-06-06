@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container-fluid">
-    {{-- Breadcrumb --}}
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -18,28 +17,33 @@
         </ol>
     </nav>
 
-    {{-- Componente Livewire de Filtros --}}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h2 class="h3 mb-0 text-gray-800">
+                <i class="fas fa-search me-2"></i>
+                Catálogo de Produtos
+            </h2>
+            <p class="text-muted mb-0">Encontre produtos usando os filtros abaixo</p>
+        </div>
+    </div>
+
     @livewire('product-filter')
 </div>
 @endsection
 
 @push('scripts')
 <script>
-    // Scripts específicos da página de produtos
     document.addEventListener('livewire:init', () => {
-        // Listener para eventos do componente ProductFilter
         Livewire.on('filtersCleared', () => {
             showToast('Filtros limpos com sucesso!', 'success');
         });
         
-        // Listener para mudanças nos filtros
         Livewire.on('filtersApplied', (data) => {
             const count = data[0]?.count || 0;
             showToast(`${count} produto(s) encontrado(s)`, 'info');
         });
     });
     
-    // Função para copiar link do produto
     function copyProductLink(productId) {
         const url = `${window.location.origin}/produtos/${productId}`;
         navigator.clipboard.writeText(url).then(() => {
@@ -49,9 +53,7 @@
         });
     }
     
-    // Função para favoritar produto (simulação)
     function toggleFavorite(productId) {
-        // Aqui seria implementada a lógica real de favoritos
         showToast('Produto adicionado aos favoritos!', 'success');
     }
 </script>

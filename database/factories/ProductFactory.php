@@ -60,7 +60,8 @@ class ProductFactory extends Factory
                 'https://via.placeholder.com/400x400/0099CC/FFFFFF?text=Produto+7',
                 'https://via.placeholder.com/400x400/CC9900/FFFFFF?text=Produto+8'
             ]),
-            // category_id e brand_id serão definidos no seeder
+            'category_id' => Category::factory(),
+            'brand_id' => Brand::inRandomOrder()->first()?->id ?: Brand::factory(),
         ];
     }
 }

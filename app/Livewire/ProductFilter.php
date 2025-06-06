@@ -2,19 +2,16 @@
 
 namespace App\Livewire;
 
-use App\Models\Brand;
-use App\Models\Category;
-use App\Models\Product;
+use App\Services\ProductService;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Url;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class ProductFilter extends Component
 {
     use WithPagination;
 
-    // Propriedades reativas para filtros com persistência na URL
     #[Url(as: 'busca', except: '')]
     public $searchName = '';
     
@@ -24,123 +21,57 @@ class ProductFilter extends Component
     #[Url(as: 'marcas', except: [])]
     public $selectedBrands = [];
     
-    // Propriedades para controle da interface
     #[Url(as: 'por_pagina', except: 12)]
     public $perPage = 12;
     
     public $showFilters = true;
-    
-    // Propriedades para debounce
     public $searchBuffer = '';
     
-    // Listeners para eventos
     protected $listeners = ['clearFilters', 'applySearch'];
     
-    // Propriedades computadas para otimização
     public $categories;
     public $brands;
     
-    // Cache keys
-    private const CACHE_CATEGORIES = 'filter_categories';
-    private const CACHE_BRANDS = 'filter_brands';
-    private const CACHE_TTL = 3600; // 1 hora
-    
-    /**
-     * Inicialização do componente
-     */
-    public function mount()
+    public function mount(ProductService $productService)
     {
-        // Carregar categorias e marcas básicas (sem contadores fixos)
-        $this->categories = Cache::remember(self::CACHE_CATEGORIES, self::CACHE_TTL, function () {
-            return Category::orderBy('name')->get();
-        });
-        
-        $this->brands = Cache::remember(self::CACHE_BRANDS, self::CACHE_TTL, function () {
-            return Brand::orderBy('name')->get();
-        });
-        
-        // Validar parâmetros da URL
-        $this->validateUrlParameters();
-        
-        // Inicializar buffer de busca
-        $this->searchBuffer = $this->searchName;
+        try {
+            $this->categories = $productService->getCachedCategories();
+            $this->brands = $productService->getCachedBrands();
+            $this->validateUrlParameters();
+            $this->searchBuffer = $this->searchName;
+        } catch (\Exception $e) {
+            Log::error('Error in ProductFilter@mount', ['error' => $e->getMessage()]);
+            $this->categories = collect();
+            $this->brands = collect();
+        }
     }
     
-    /**
-     * Obter categorias com contadores dinâmicos baseados nos filtros atuais
-     */
     public function getCategoriesWithCountsProperty()
     {
-        return $this->categories->map(function ($category) {
-            // Criar query base para produtos ativos
-            $query = Product::query()->where('active', true);
-            
-            // Aplicar filtro de categoria específica
-            $query->where('category_id', $category->id);
-            
-            // Aplicar outros filtros ativos (exceto categoria)
-            if (!empty($this->selectedBrands)) {
-                $query->whereIn('brand_id', $this->selectedBrands);
-            }
-            
-            if (!empty($this->searchName)) {
-                $query->searchByName($this->searchName);
-            }
-            
-            $category->products_count = $query->count();
-            return $category;
-        });
+        return $this->categories;
     }
     
-    /**
-     * Obter marcas com contadores dinâmicos baseados nos filtros atuais
-     */
     public function getBrandsWithCountsProperty()
     {
-        return $this->brands->map(function ($brand) {
-            // Criar query base para produtos ativos
-            $query = Product::query()->where('active', true);
-            
-            // Aplicar filtro de marca específica
-            $query->where('brand_id', $brand->id);
-            
-            // Aplicar outros filtros ativos (exceto marca)
-            if (!empty($this->selectedCategories)) {
-                $query->whereIn('category_id', $this->selectedCategories);
-            }
-            
-            if (!empty($this->searchName)) {
-                $query->searchByName($this->searchName);
-            }
-            
-            $brand->products_count = $query->count();
-            return $brand;
-        });
+        return $this->brands;
     }
     
-    /**
-     * Validar parâmetros vindos da URL
-     */
     private function validateUrlParameters()
     {
-        // Validar categorias selecionadas
         if (!empty($this->selectedCategories)) {
             $validCategories = $this->categories->pluck('id')->toArray();
             $this->selectedCategories = array_intersect($this->selectedCategories, $validCategories);
         }
         
-        // Validar marcas selecionadas
         if (!empty($this->selectedBrands)) {
             $validBrands = $this->brands->pluck('id')->toArray();
             $this->selectedBrands = array_intersect($this->selectedBrands, $validBrands);
         }
         
-        // Validar perPage
         if (!in_array($this->perPage, [6, 12, 24, 48])) {
             $this->perPage = 12;
         }
         
-        // Sanitizar searchName
         $this->searchName = trim(strip_tags($this->searchName));
     }
     
@@ -210,59 +141,52 @@ class ProductFilter extends Component
     public function toggleFilters()
     {
         $this->showFilters = !$this->showFilters;
-    }
-    
-    /**
-     * Gerar chave de cache para consulta
-     */
-    private function getCacheKey($suffix = '')
-    {
-        $filters = [
-            'search' => $this->searchName,
-            'categories' => $this->selectedCategories,
-            'brands' => $this->selectedBrands,
-            'page' => $this->getPage(),
-            'perPage' => $this->perPage
-        ];
         
-        return 'products_filter_' . md5(serialize($filters)) . $suffix;
+        if ($this->showFilters) {
+            $this->refreshCategoriesAndBrands();
+        }
     }
     
-    /**
-     * Construir query base para produtos
-     */
-    private function buildProductQuery()
+    public function refreshCategoriesAndBrands()
     {
-        return Product::query()
-            ->with(['category:id,name,slug', 'brand:id,name,slug']) // Eager loading otimizado
-            ->when($this->searchName, function ($query) {
-                $query->searchByName($this->searchName);
-            })
-            ->when($this->selectedCategories, function ($query) {
-                $query->filterByCategories($this->selectedCategories);
-            })
-            ->when($this->selectedBrands, function ($query) {
-                $query->filterByBrands($this->selectedBrands);
-            })
-            ->where('active', true);
+        try {
+            $productService = app(ProductService::class);
+            $this->categories = $productService->refreshCategoriesCache();
+            $this->brands = $productService->refreshBrandsCache();
+        } catch (\Exception $e) {
+            Log::error('Error in ProductFilter@refreshCategoriesAndBrands', ['error' => $e->getMessage()]);
+        }
     }
     
-    /**
-     * Obter produtos filtrados
-     */
     public function getProductsProperty()
     {
-        return $this->buildProductQuery()
-            ->orderBy('name')
-            ->paginate($this->perPage);
+        try {
+            $productService = app(ProductService::class);
+            return $productService->getFilteredProducts(
+                $this->searchName,
+                $this->selectedCategories,
+                $this->selectedBrands,
+                $this->perPage
+            );
+        } catch (\Exception $e) {
+            Log::error('Error in ProductFilter@getProductsProperty', ['error' => $e->getMessage()]);
+            return collect();
+        }
     }
     
-    /**
-     * Obter contagem total de produtos filtrados
-     */
     public function getProductsCountProperty()
     {
-        return $this->buildProductQuery()->count();
+        try {
+            $productService = app(ProductService::class);
+            return $productService->getFilteredProductsCount(
+                $this->searchName,
+                $this->selectedCategories,
+                $this->selectedBrands
+            );
+        } catch (\Exception $e) {
+            Log::error('Error in ProductFilter@getProductsCountProperty', ['error' => $e->getMessage()]);
+            return 0;
+        }
     }
     
     /**
@@ -288,19 +212,13 @@ class ProductFilter extends Component
         ];
     }
     
-    /**
-     * Limpar cache relacionado aos filtros
-     */
     public function clearFilterCache()
     {
-        // Limpar cache de categorias e marcas
-        Cache::forget(self::CACHE_CATEGORIES);
-        Cache::forget(self::CACHE_BRANDS);
-        
-        // Limpar cache de produtos (padrão genérico)
-        $tags = ['products_filter_*'];
-        foreach ($tags as $tag) {
-            Cache::flush(); // Em produção, usar tags específicas
+        try {
+            $productService = app(ProductService::class);
+            $productService->clearCache();
+        } catch (\Exception $e) {
+            Log::error('Error in ProductFilter@clearFilterCache', ['error' => $e->getMessage()]);
         }
     }
     
