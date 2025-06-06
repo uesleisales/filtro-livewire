@@ -73,7 +73,7 @@ class ProductFilter extends Component
     {
         return $this->categories->map(function ($category) {
             // Criar query base para produtos ativos
-            $query = $this->buildBaseQuery();
+            $query = Product::query()->where('active', true);
             
             // Aplicar filtro de categoria específica
             $query->where('category_id', $category->id);
@@ -84,12 +84,7 @@ class ProductFilter extends Component
             }
             
             if (!empty($this->searchName)) {
-                $searchTerm = '%' . $this->searchName . '%';
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('name', 'like', $searchTerm)
-                      ->orWhere('description', 'like', $searchTerm)
-                      ->orWhere('sku', 'like', $searchTerm);
-                });
+                $query->searchByName($this->searchName);
             }
             
             $category->products_count = $query->count();
@@ -104,7 +99,7 @@ class ProductFilter extends Component
     {
         return $this->brands->map(function ($brand) {
             // Criar query base para produtos ativos
-            $query = $this->buildBaseQuery();
+            $query = Product::query()->where('active', true);
             
             // Aplicar filtro de marca específica
             $query->where('brand_id', $brand->id);
@@ -115,12 +110,7 @@ class ProductFilter extends Component
             }
             
             if (!empty($this->searchName)) {
-                $searchTerm = '%' . $this->searchName . '%';
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('name', 'like', $searchTerm)
-                      ->orWhere('description', 'like', $searchTerm)
-                      ->orWhere('sku', 'like', $searchTerm);
-                });
+                $query->searchByName($this->searchName);
             }
             
             $brand->products_count = $query->count();
@@ -258,29 +248,21 @@ class ProductFilter extends Component
     }
     
     /**
-     * Obter produtos filtrados com cache
+     * Obter produtos filtrados
      */
     public function getProductsProperty()
     {
-        $cacheKey = $this->getCacheKey('_products');
-        
-        return Cache::remember($cacheKey, 300, function () { // Cache por 5 minutos
-            return $this->buildProductQuery()
-                ->orderBy('name')
-                ->paginate($this->perPage);
-        });
+        return $this->buildProductQuery()
+            ->orderBy('name')
+            ->paginate($this->perPage);
     }
     
     /**
-     * Obter contagem total de produtos filtrados com cache
+     * Obter contagem total de produtos filtrados
      */
     public function getProductsCountProperty()
     {
-        $cacheKey = $this->getCacheKey('_count');
-        
-        return Cache::remember($cacheKey, 300, function () { // Cache por 5 minutos
-            return $this->buildProductQuery()->count();
-        });
+        return $this->buildProductQuery()->count();
     }
     
     /**
