@@ -57,70 +57,40 @@ abstract class AbstractCrudController extends Controller
         }
     }
 
-    public function show(int $id): View
+    public function show($entity): View
     {
-        try {
-            $entity = $this->getService()->{$this->getWithProductsMethod()}($id);
-            $viewData = [$this->getEntityName() => $entity];
-            return view($this->getViewPrefix() . '.show', $viewData);
-        } catch (\Exception $e) {
-            $exceptionClass = $this->getExceptionClass();
-            if ($e instanceof $exceptionClass) {
-                $viewData = [$this->getEntityName() => null];
-                return view($this->getViewPrefix() . '.show', $viewData)
-                    ->withErrors(['error' => $e->getMessage()]);
-            }
-            throw $e;
-        }
+        $viewData = [$this->getEntityName() => $entity];
+        return view($this->getViewPrefix() . '.show', $viewData);
     }
 
-    public function edit(int $id): View
+    public function edit($entity): View
     {
-        try {
-            $entity = $this->getService()->findById($id);
-            $viewData = [$this->getEntityName() => $entity];
-            return view($this->getViewPrefix() . '.edit', $viewData);
-        } catch (\Exception $e) {
-            $exceptionClass = $this->getExceptionClass();
-            if ($e instanceof $exceptionClass) {
-                $viewData = [$this->getEntityName() => null];
-                return view($this->getViewPrefix() . '.edit', $viewData)
-                    ->withErrors(['error' => $e->getMessage()]);
-            }
-            throw $e;
-        }
+        $viewData = [$this->getEntityName() => $entity];
+        return view($this->getViewPrefix() . '.edit', $viewData);
     }
 
-    public function update(FormRequest $request, int $id): RedirectResponse
+    public function update(FormRequest $request, $entity): RedirectResponse
     {
         try {
-            $this->getService()->update($id, $request->validated());
+            $data = $request->validated();
+            $this->getService()->update($entity->id, $data);
+            
             return redirect()->route($this->getRoutePrefix() . '.index')
-                ->with('success', ucfirst($this->getEntityName()) . ' atualizada com sucesso!');
+                ->with('success', ucfirst($this->getEntityName()) . ' atualizado com sucesso!');
         } catch (\Exception $e) {
-            $exceptionClass = $this->getExceptionClass();
-            if ($e instanceof $exceptionClass) {
-                return redirect()->back()
-                    ->withErrors(['error' => $e->getMessage()])
-                    ->withInput();
-            }
-            throw $e;
+            return back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy($entity): RedirectResponse
     {
         try {
-            $this->getService()->delete($id);
+            $this->getService()->delete($entity->id);
+            
             return redirect()->route($this->getRoutePrefix() . '.index')
-                ->with('success', ucfirst($this->getEntityName()) . ' excluída com sucesso!');
+                ->with('success', ucfirst($this->getEntityName()) . ' excluído com sucesso!');
         } catch (\Exception $e) {
-            $exceptionClass = $this->getExceptionClass();
-            if ($e instanceof $exceptionClass) {
-                return redirect()->route($this->getRoutePrefix() . '.index')
-                    ->withErrors(['error' => $e->getMessage()]);
-            }
-            throw $e;
+            return redirect()->back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Requests\CategoryRequest;
 use App\Exceptions\CategoryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Foundation\Http\FormRequest;
 
 class CategoryController extends AbstractCrudController
 {
@@ -21,7 +22,7 @@ class CategoryController extends AbstractCrudController
 
     protected function getViewPrefix(): string
     {
-        return 'categories';
+        return 'categorias';
     }
 
     protected function getRoutePrefix(): string
@@ -31,12 +32,12 @@ class CategoryController extends AbstractCrudController
 
     protected function getEntityName(): string
     {
-        return 'category';
+        return 'categoria';
     }
 
     protected function getEntityNamePlural(): string
     {
-        return 'categories';
+        return 'categorias';
     }
 
     protected function getExceptionClass(): string
@@ -46,16 +47,21 @@ class CategoryController extends AbstractCrudController
 
     protected function getWithProductsMethod(): string
     {
-        return 'getCategoryWithProducts';
+        return 'getAllWithProducts';
     }
 
-    public function store(CategoryRequest $request): RedirectResponse
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->categoryService->findBySlug($value);
+    }
+
+    public function store(FormRequest $request): RedirectResponse
     {
         return parent::store($request);
     }
 
-    public function update(CategoryRequest $request, int $id): RedirectResponse
+    public function update(FormRequest $request, $entity): RedirectResponse
     {
-        return parent::update($request, $id);
+        return parent::update($request, $entity);
     }
 }

@@ -76,6 +76,22 @@ class CategoryService
         }
     }
 
+    public function findBySlug(string $slug): Category
+    {
+        try {
+            $category = $this->categoryRepository->findBySlug($slug);
+            if (!$category) {
+                throw new CategoryException('Category not found');
+            }
+            return $category;
+        } catch (CategoryException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Error finding category by slug', ['slug' => $slug, 'error' => $e->getMessage()]);
+            throw new CategoryException('Failed to find category');
+        }
+    }
+
     public function findByIdAsDTO(int $id): CategoryDTO
     {
         try {

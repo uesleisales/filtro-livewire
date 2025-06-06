@@ -81,12 +81,12 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('categories.show', $categoria) }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('categories.edit', $categoria) }}" class="btn btn-sm btn-outline-warning">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('categories.destroy', $categoria) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?')">
+                                            <i class="fas fa-eye me-1"></i> Ver
+                                        </a>
+                                        <a href="{{ route('categories.edit', $categoria) }}" class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-edit me-1"></i> Editar
+                                        </a>
+                                        <form action="{{ route('categories.destroy', $categoria) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta categoria?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger">

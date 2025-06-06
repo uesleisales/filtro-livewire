@@ -9,9 +9,9 @@ interface BrandRepositoryInterface
 {
     public function getAllWithProductCount(int $perPage = 15): LengthAwarePaginator;
     
-    public function findById(int $id): ?Brand;
+    public function findById(string|int $id): ?Brand;
     
-    public function findWithProducts(int $id): ?Brand;
+    public function findWithProducts(string|int $id): ?Brand;
     
     public function create(array $data): Brand;
     

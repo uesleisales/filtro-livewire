@@ -7,6 +7,7 @@ use App\Http\Requests\BrandRequest;
 use App\Exceptions\BrandException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use Illuminate\Foundation\Http\FormRequest;
 
 class BrandController extends AbstractCrudController
 {
@@ -21,7 +22,7 @@ class BrandController extends AbstractCrudController
 
     protected function getViewPrefix(): string
     {
-        return 'brands';
+        return 'marcas';
     }
 
     protected function getRoutePrefix(): string
@@ -31,12 +32,12 @@ class BrandController extends AbstractCrudController
 
     protected function getEntityName(): string
     {
-        return 'brand';
+        return 'marca';
     }
 
     protected function getEntityNamePlural(): string
     {
-        return 'brands';
+        return 'marcas';
     }
 
     protected function getExceptionClass(): string
@@ -46,16 +47,21 @@ class BrandController extends AbstractCrudController
 
     protected function getWithProductsMethod(): string
     {
-        return 'getBrandWithProducts';
+        return 'getAllWithProducts';
     }
 
-    public function store(BrandRequest $request): RedirectResponse
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->brandService->findBySlug($value);
+    }
+
+    public function store(FormRequest $request): RedirectResponse
     {
         return parent::store($request);
     }
 
-    public function update(BrandRequest $request, int $id): RedirectResponse
+    public function update(FormRequest $request, $entity): RedirectResponse
     {
-        return parent::update($request, $id);
+        return parent::update($request, $entity);
     }
 }

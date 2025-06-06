@@ -1,61 +1,267 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Sistema de Filtros de Produtos - Laravel
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+<img src="https://img.shields.io/badge/Laravel-11.x-red.svg" alt="Laravel Version">
+<img src="https://img.shields.io/badge/PHP-8.2+-blue.svg" alt="PHP Version">
+<img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
 </p>
 
-## About Laravel
+## Sobre o Projeto
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Sistema de catálogo de produtos com funcionalidades avançadas de filtragem por categorias e marcas. Desenvolvido seguindo princípios de **Arquitetura Limpa**, **SOLID**, **DRY** e **KISS**, garantindo código maintível, escalável e testável.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Funcionalidades Principais
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- 📦 **Catálogo de Produtos** com paginação otimizada
+- 🔍 **Sistema de Filtros Dinâmicos** (categoria, marca, preço)
+- ⚡ **Filtros em Tempo Real** com Livewire
+- 🏷️ **Gerenciamento de Categorias e Marcas** (CRUD completo)
+- 🔗 **URLs Amigáveis** com slugs únicos
+- 📱 **Interface Responsiva** com Bootstrap
+- 🚀 **Performance Otimizada** com eager loading e cache
 
-## Learning Laravel
+## Arquitetura e Princípios Aplicados
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🏗️ Arquitetura Limpa (Clean Architecture)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```
+app/
+├── DTOs/              # Data Transfer Objects
+├── Repositories/      # Camada de Dados
+├── Services/          # Lógica de Negócio
+├── Http/Controllers/  # Camada de Apresentação
+└── Models/           # Entidades de Domínio
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 🎯 Princípios SOLID
 
-## Laravel Sponsors
+- **S** - Single Responsibility: Cada classe tem uma única responsabilidade
+- **O** - Open/Closed: Extensível sem modificação (AbstractCrudController)
+- **L** - Liskov Substitution: Interfaces bem definidas (RepositoryInterface)
+- **I** - Interface Segregation: Interfaces específicas por contexto
+- **D** - Dependency Inversion: Injeção de dependências em todos os níveis
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🔄 Padrões Implementados
 
-### Premium Partners
+- **Repository Pattern**: Abstração da camada de dados
+- **Service Layer**: Centralização da lógica de negócio
+- **DTO Pattern**: Transferência segura de dados
+- **Factory Pattern**: Criação de objetos complexos
+- **Strategy Pattern**: Algoritmos de filtragem intercambiáveis
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 📏 Princípios DRY e KISS
 
-## Contributing
+- **DRY (Don't Repeat Yourself)**: Reutilização através de AbstractCrudController
+- **KISS (Keep It Simple, Stupid)**: Código simples e legível
+- **Modularização**: Componentes pequenos e especializados
+- **Convenções**: Nomenclatura consistente e autoexplicativa
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Requisitos do Sistema
 
-## Code of Conduct
+- **PHP**: 8.2 ou superior
+- **Composer**: 2.x
+- **Node.js**: 18.x ou superior
+- **MySQL**: 8.0 ou superior
+- **Docker** (opcional): 20.x ou superior
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Instalação
 
-## Security Vulnerabilities
+### 🐳 Instalação com Docker (Recomendado)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+# Clone o repositório
+git clone <repository-url>
+cd laravel-filtros
 
-## License
+# Copie o arquivo de ambiente
+cp .env.example .env
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# Suba os containers
+docker-compose up -d
+
+# Instale as dependências PHP
+docker-compose exec app composer install
+
+# Gere a chave da aplicação
+docker-compose exec app php artisan key:generate
+
+# Execute as migrações e seeders
+docker-compose exec app php artisan migrate --seed
+
+# Instale as dependências Node.js
+docker-compose exec app npm install
+
+# Compile os assets
+docker-compose exec app npm run build
+```
+
+**Acesse a aplicação em:** http://localhost:8000
+
+### 💻 Instalação Local
+
+```bash
+# Clone o repositório
+git clone <repository-url>
+cd laravel-filtros
+
+# Instale as dependências PHP
+composer install
+
+# Copie e configure o ambiente
+cp .env.example .env
+# Edite o .env com suas configurações de banco
+
+# Gere a chave da aplicação
+php artisan key:generate
+
+# Execute as migrações e seeders
+php artisan migrate --seed
+
+# Instale as dependências Node.js
+npm install
+
+# Compile os assets
+npm run build
+
+# Inicie o servidor
+php artisan serve
+```
+
+**Acesse a aplicação em:** http://localhost:8000
+
+## Configuração do Banco de Dados
+
+### MySQL Local
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel_filtros
+DB_USERNAME=seu_usuario
+DB_PASSWORD=sua_senha
+```
+
+### MySQL com Docker
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=laravel_filtros
+DB_USERNAME=laravel
+DB_PASSWORD=password
+```
+
+## Estrutura do Projeto
+
+### Camadas da Aplicação
+
+```
+📁 app/
+├── 📁 DTOs/                    # Objetos de Transferência de Dados
+│   ├── BrandDTO.php
+│   ├── CategoryDTO.php
+│   └── ProductDTO.php
+├── 📁 Http/Controllers/        # Controladores
+│   ├── AbstractCrudController.php
+│   ├── BrandController.php
+│   ├── CategoryController.php
+│   └── ProductController.php
+├── 📁 Repositories/           # Camada de Dados
+│   ├── BrandRepository.php
+│   ├── CategoryRepository.php
+│   └── Interfaces/
+├── 📁 Services/              # Lógica de Negócio
+│   ├── BrandService.php
+│   ├── CategoryService.php
+│   └── ProductService.php
+└── 📁 Livewire/             # Componentes Reativos
+    └── ProductFilter.php
+```
+
+### Principais Componentes
+
+#### AbstractCrudController
+Controlador base que implementa operações CRUD genéricas, seguindo o princípio DRY:
+
+- ✅ Operações padronizadas (index, show, create, store, edit, update, destroy)
+- ✅ Route Model Binding automático
+- ✅ Tratamento de exceções centralizado
+- ✅ Validação consistente
+
+#### Repository Pattern
+Abstração da camada de dados com interfaces bem definidas:
+
+- ✅ Separação entre lógica de negócio e acesso a dados
+- ✅ Facilita testes unitários
+- ✅ Permite troca de implementação sem impacto
+
+#### Service Layer
+Centralização da lógica de negócio:
+
+- ✅ Regras de negócio isoladas
+- ✅ Reutilização entre controladores
+- ✅ Facilita manutenção e evolução
+
+## Comandos Úteis
+
+```bash
+# Executar testes
+php artisan test
+
+# Limpar cache
+php artisan cache:clear
+php artisan config:clear
+php artisan view:clear
+
+# Recriar banco de dados
+php artisan migrate:fresh --seed
+
+# Compilar assets para produção
+npm run build
+
+# Modo de desenvolvimento (watch)
+npm run dev
+```
+
+## Testes
+
+O projeto inclui testes automatizados para garantir qualidade:
+
+```bash
+# Executar todos os testes
+php artisan test
+
+# Executar testes com cobertura
+php artisan test --coverage
+
+# Executar testes específicos
+php artisan test --filter ProductFilterTest
+```
+
+## Performance e Otimizações
+
+- **Eager Loading**: Carregamento otimizado de relacionamentos
+- **Paginação**: Limitação de registros por página
+- **Indexação**: Índices de banco otimizados
+- **Cache**: Sistema de cache para consultas frequentes
+- **Lazy Loading**: Carregamento sob demanda de componentes
+
+## Contribuição
+
+Para contribuir com o projeto:
+
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
+3. Commit suas mudanças (`git commit -am 'Adiciona nova funcionalidade'`)
+4. Push para a branch (`git push origin feature/nova-funcionalidade`)
+5. Abra um Pull Request
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](https://opensource.org/licenses/MIT).
+
+---
+
+**Desenvolvido com ❤️ seguindo as melhores práticas de desenvolvimento**

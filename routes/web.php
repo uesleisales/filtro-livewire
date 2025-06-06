@@ -28,6 +28,17 @@ Route::resource('categories', CategoryController::class);
  */
 Route::resource('brands', BrandController::class);
 
+/*
+ * Route Model Binding Configuration
+ */
+Route::bind('brand', function ($value) {
+    return app(\App\Services\BrandService::class)->findBySlug($value);
+});
+
+Route::bind('category', function ($value) {
+    return app(\App\Services\CategoryService::class)->findBySlug($value);
+});
+
 /**
  * Rota para visualizar produto específico (futura implementação)
  */

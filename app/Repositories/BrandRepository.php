@@ -15,7 +15,7 @@ class BrandRepository implements BrandRepositoryInterface
             ->paginate($perPage);
     }
 
-    public function findById(int $id): ?Brand
+    public function findById(string|int $id): ?Brand
     {
         return Cache::remember(
             "brand_{$id}",
@@ -24,7 +24,7 @@ class BrandRepository implements BrandRepositoryInterface
         );
     }
 
-    public function findWithProducts(int $id): ?Brand
+    public function findWithProducts(string|int $id): ?Brand
     {
         return Brand::with(['products' => function ($query) {
             $query->orderBy('name');

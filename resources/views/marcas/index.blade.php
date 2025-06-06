@@ -72,30 +72,30 @@
                         </thead>
                         <tbody>
                             @forelse($marcas as $marca)
-                                <tr>
-                                    <td>{{ $marca->id }}</td>
-                                    <td>{{ $marca->name }}</td>
-                                    <td>{{ $marca->description ?? '-' }}</td>
-                                    <td>{{ $marca->products_count }}</td>
-                                    <td>{{ $marca->created_at->format('d/m/Y H:i') }}</td>
-                                    <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="{{ route('brands.show', $marca) }}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('brands.edit', $marca) }}" class="btn btn-sm btn-outline-warning">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('brands.destroy', $marca) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta marca?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td>{{ $marca->id }}</td>
+                                        <td>{{ $marca->name }}</td>
+                                        <td>{{ $marca->description ?? '-' }}</td>
+                                        <td>{{ $marca->products_count }}</td>
+                                        <td>{{ $marca->created_at->format('d/m/Y H:i') }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ route('brands.show', $marca) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye me-1"></i> Ver
+                                        </a>
+                                        <a href="{{ route('brands.edit', $marca) }}" class="btn btn-sm btn-outline-warning">
+                                            <i class="fas fa-edit me-1"></i> Editar
+                                        </a>
+                                        <form action="{{ route('brands.destroy', $marca) }}" method="POST" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta marca?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
                             @empty
                                 <tr>
                                     <td colspan="6" class="text-center">Nenhuma marca encontrada.</td>

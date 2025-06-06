@@ -1,121 +1,163 @@
 <div>
     <div class="row mb-4">
-        <div class="col-md-12 text-end">
-            <button 
-                wire:click="toggleFilters" 
-                class="btn btn-outline-primary btn-sm"
-                type="button"
-            >
-                <i class="fas {{ $showFilters ? 'fa-eye-slash' : 'fa-eye' }} me-1"></i>
-                {{ $showFilters ? 'Ocultar' : 'Mostrar' }} Filtros
-            </button>
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <button 
+                    type="button" 
+                    class="btn btn-primary btn-lg shadow-sm" 
+                    wire:click="toggleFilters"
+                    wire:loading.attr="disabled"
+                >
+                    <span wire:loading.remove wire:target="toggleFilters">
+                        @if($showFilters)
+                            <i class="fas fa-eye-slash me-2"></i> Ocultar Filtros
+                        @else
+                            <i class="fas fa-filter me-2"></i> Mostrar Filtros
+                        @endif
+                    </span>
+                    <span wire:loading wire:target="toggleFilters">
+                        <div class="loading-spinner me-2"></div> Carregando...
+                    </span>
+                </button>
+                
+                @if($showFilters)
+                    <div class="d-flex align-items-center text-muted">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <small>Use os filtros abaixo para refinar sua busca</small>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 
     @if($showFilters)
-    <div class="card shadow-sm mb-4" wire:transition>
-        <div class="card-header bg-light">
+    <div class="card shadow-lg border-0 mb-4" wire:transition>
+        <div class="card-header bg-gradient text-white">
             <div class="row align-items-center">
                 <div class="col">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-filter me-2"></i>
-                        Filtros de Busca
+                    <h5 class="card-title mb-0 d-flex align-items-center">
+                        <i class="fas fa-sliders-h me-2"></i>
+                        Filtros Avançados
                     </h5>
                 </div>
                 <div class="col-auto">
                     @if($hasActiveFilters)
                         <button 
                             wire:click="clearFilters" 
-                            class="btn btn-outline-danger btn-sm"
+                            class="btn btn-outline-light btn-sm"
                             type="button"
+                            wire:loading.attr="disabled"
                         >
-                            <i class="fas fa-times me-1"></i>
-                            Limpar Filtros
+                            <i class="fas fa-eraser me-1"></i>
+                            Limpar
                         </button>
                     @endif
                 </div>
             </div>
         </div>
-        <div class="card-body">
+        <div class="card-body p-4">
             <div class="row g-3">
                 {{-- Campo de busca por nome --}}
                 <div class="col-md-12">
-                    <label for="searchBuffer" class="form-label fw-semibold">
-                        <i class="fas fa-search me-1"></i>
-                        Buscar por nome do produto
+                    <label for="searchBuffer" class="form-label fw-bold text-primary">
+                        <i class="fas fa-search me-2"></i>
+                        Buscar por Nome do Produto
                     </label>
-                    <input 
-                        wire:model.live.debounce.500ms="searchBuffer"
-                        type="text" 
-                        class="form-control" 
-                        id="searchBuffer"
-                        placeholder="Digite o nome do produto..."
-                        x-data="{ searchTimeout: null }"
-                        x-on:input="
-                            clearTimeout(searchTimeout);
-                            searchTimeout = setTimeout(() => {
-                                $wire.call('applySearch');
-                            }, 800);
-                        "
-                    >
-                    <small class="text-muted">A busca será aplicada automaticamente após parar de digitar</small>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fas fa-search text-muted"></i>
+                        </span>
+                        <input 
+                            wire:model.live.debounce.500ms="searchBuffer"
+                            type="text" 
+                            class="form-control border-start-0" 
+                            id="searchBuffer"
+                            placeholder="Digite o nome do produto que você está procurando..."
+                            x-data="{ searchTimeout: null }"
+                            x-on:input="
+                                clearTimeout(searchTimeout);
+                                searchTimeout = setTimeout(() => {
+                                    $wire.call('applySearch');
+                                }, 800);
+                            "
+                        >
+                    </div>
+                    @if($searchBuffer)
+                        <small class="text-muted mt-1 d-block">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Buscando por: "{{ $searchBuffer }}"
+                        </small>
+                    @else
+                        <small class="text-muted">A busca será aplicada automaticamente após parar de digitar</small>
+                    @endif
                 </div>
 
+                {{-- Filtro por Categorias --}}
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">
-                        <i class="fas fa-tags me-1"></i>
-                        Categorias
-                        @if(count($selectedCategories) > 0)
-                            <span class="badge bg-primary ms-1">{{ count($selectedCategories) }}</span>
-                        @endif
-                    </label>
-                    <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                        @forelse($categories as $category)
-                            <div class="form-check">
-                                <input 
-                                    wire:model.live="selectedCategories"
-                                    class="form-check-input" 
-                                    type="checkbox" 
-                                    value="{{ $category->id }}"
-                                    id="category_{{ $category->id }}"
-                                >
-                                <label class="form-check-label" for="category_{{ $category->id }}">
-                                    {{ $category->name }}
-                                    <small class="text-muted">({{ $category->products_count ?? 0 }})</small>
-                                </label>
-                            </div>
-                        @empty
-                            <p class="text-muted mb-0">Nenhuma categoria encontrada</p>
-                        @endforelse
+                    <div class="filter-section">
+                        <label class="form-label fw-bold text-primary d-flex align-items-center justify-content-between">
+                            <span>
+                                <i class="fas fa-tags me-2"></i>
+                                Categorias
+                            </span>
+                            <span class="badge bg-primary">{{ count($categories) }}</span>
+                        </label>
+                        <div class="border rounded-3 p-3 bg-light" style="max-height: 250px; overflow-y: auto;">
+                            @forelse($categories as $category)
+                                <div class="form-check mb-3 p-2 rounded hover-bg-white">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        value="{{ $category->id }}" 
+                                        id="category_{{ $category->id }}"
+                                        wire:model.live="selectedCategories"
+                                    >
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100" for="category_{{ $category->id }}">
+                                        <span class="fw-medium">{{ $category->name }}</span>
+                                        <span class="badge bg-success rounded-pill">{{ $category->products_count ?? 0 }}</span>
+                                    </label>
+                                </div>
+                            @empty
+                                <div class="text-center py-3">
+                                    <i class="fas fa-exclamation-circle text-muted mb-2" style="font-size: 2rem;"></i>
+                                    <p class="text-muted mb-0">Nenhuma categoria encontrada.</p>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold">
-                        <i class="fas fa-copyright me-1"></i>
-                        Marcas
-                        @if(count($selectedBrands) > 0)
-                            <span class="badge bg-primary ms-1">{{ count($selectedBrands) }}</span>
-                        @endif
-                    </label>
-                    <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
-                        @forelse($brands as $brand)
-                            <div class="form-check">
-                                <input 
-                                    wire:model.live="selectedBrands"
-                                    class="form-check-input" 
-                                    type="checkbox" 
-                                    value="{{ $brand->id }}"
-                                    id="brand_{{ $brand->id }}"
-                                >
-                                <label class="form-check-label" for="brand_{{ $brand->id }}">
-                                    {{ $brand->name }}
-                                    <small class="text-muted">({{ $brand->products_count ?? 0 }})</small>
-                                </label>
-                            </div>
-                        @empty
-                            <p class="text-muted mb-0">Nenhuma marca encontrada</p>
-                        @endforelse
+                    <div class="filter-section">
+                        <label class="form-label fw-bold text-primary d-flex align-items-center justify-content-between">
+                            <span>
+                                <i class="fas fa-copyright me-2"></i>
+                                Marcas
+                            </span>
+                            <span class="badge bg-primary">{{ count($brands) }}</span>
+                        </label>
+                        <div class="border rounded-3 p-3 bg-light" style="max-height: 250px; overflow-y: auto;">
+                            @forelse($brands as $marca)
+                                <div class="form-check mb-3 p-2 rounded hover-bg-white">
+                                    <input 
+                                        class="form-check-input" 
+                                        type="checkbox" 
+                                        value="{{ $marca->id }}"
+                                        id="brand_{{ $marca->id }}"
+                                        wire:model.live="selectedBrands"
+                                    >
+                                    <label class="form-check-label d-flex align-items-center justify-content-between w-100" for="brand_{{ $marca->id }}">
+                                        <span class="fw-medium">{{ $marca->name }}</span>
+                                        <span class="badge bg-info rounded-pill">{{ $marca->products_count ?? 0 }}</span>
+                                    </label>
+                                </div>
+                            @empty
+                                <div class="text-center py-3">
+                                    <i class="fas fa-exclamation-circle text-muted mb-2" style="font-size: 2rem;"></i>
+                                    <p class="text-muted mb-0">Nenhuma marca encontrada.</p>
+                                </div>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>

@@ -65,29 +65,72 @@
 
         .card {
             border: none;
-            border-radius: 0.75rem;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            border-radius: 1rem;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background: var(--gradient-primary) !important;
+            color: white;
+            border-radius: 1rem 1rem 0 0 !important;
+            border: none;
+            padding: 1.5rem;
         }
 
         .btn {
-            border-radius: 0.5rem;
-            font-weight: 500;
-            transition: all 0.2s ease-in-out;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+            border: none;
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn:hover {
-            transform: translateY(-1px);
+        .btn-primary {
+            background: var(--gradient-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-primary:hover {
+            background: var(--gradient-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--gradient-primary);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
         }
 
         .form-control, .form-select {
-            border-radius: 0.5rem;
-            border: 1px solid #dee2e6;
-            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            border-radius: 0.75rem;
+            border: 2px solid #e2e8f0;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: white;
         }
 
         .text-gray-800 {
@@ -172,6 +215,186 @@
         [wire\:loading\.delay\.longest] {
             opacity: 0.6;
         }
+
+        /* Navbar Improvements */
+        .navbar {
+            z-index: 1050;
+        }
+
+        .navbar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .dropdown-menu {
+            z-index: 1060;
+            border: none;
+            box-shadow: var(--shadow-lg);
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .dropdown-item:hover {
+            background: var(--gradient-primary) !important;
+            color: white !important;
+            transform: translateX(5px);
+        }
+
+        .dropdown-item:hover i {
+            color: white !important;
+        }
+
+        /* Breadcrumb Improvements */
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1040;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "→";
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Page Headers */
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Form Check Improvements */
+        .form-check-input:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-check-label {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-check:hover .form-check-label {
+            color: var(--primary-color);
+            transform: translateX(3px);
+        }
+
+        /* Badge Improvements */
+        .badge {
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Filter Section Improvements */
+        .filter-section {
+            height: 100%;
+        }
+
+        .hover-bg-white:hover {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            transform: translateX(2px);
+            transition: all 0.2s ease;
+        }
+
+        .bg-gradient {
+            background: var(--gradient-primary) !important;
+        }
+
+        .form-check-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25);
+        }
+
+        .input-group-text {
+            border-color: #dee2e6;
+        }
+
+        .border-start-0 {
+            border-left: 0 !important;
+        }
+
+        .border-end-0 {
+            border-right: 0 !important;
+        }
+
+        /* Product Cards */
+        .product-card {
+            transition: all 0.3s ease;
+            border: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .product-image {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 0.5rem;
+        }
+
+        /* Toast Improvements */
+        .toast {
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .toast-header {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        /* Responsive Improvements */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+            
+            .navbar-brand .bg-white {
+                width: 35px;
+                height: 35px;
+            }
+            
+            .page-header {
+                padding: 1.5rem;
+            }
+
+            .filter-section {
+                margin-bottom: 2rem;
+            }
+
+            .btn-lg {
+                font-size: 1rem;
+                padding: 0.75rem 1.5rem;
+            }
+        }
     </style>
 
     @livewireStyles
@@ -179,41 +402,46 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <i class="fas fa-filter me-2"></i>
-                {{ config('app.name', 'Laravel') }}
+    <nav class="navbar navbar-expand-lg navbar-dark shadow-lg" style="background: var(--gradient-primary); backdrop-filter: blur(10px);">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+                <div class="bg-white rounded-circle p-2 me-3 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="fas fa-filter text-primary"></i>
+                </div>
+                <div>
+                    <div class="fw-bold">{{ config('app.name', 'Laravel') }}</div>
+                    <small class="opacity-75">Sistema de Filtros</small>
+                </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/') }}">
-                            <i class="fas fa-home me-1"></i>
+                        <a class="nav-link px-3 py-2 rounded-pill mx-1 transition-all" href="{{ url('/') }}" style="transition: all 0.3s ease;">
+                            <i class="fas fa-home me-2"></i>
                             Início
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/produtos') }}">
-                            <i class="fas fa-box me-1"></i>
+                        <a class="nav-link px-3 py-2 rounded-pill mx-1" href="{{ url('/produtos') }}" style="transition: all 0.3s ease;">
+                            <i class="fas fa-box me-2"></i>
                             Produtos
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-cog me-1"></i>
+                        <a class="nav-link dropdown-toggle px-3 py-2 rounded-pill mx-1" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="transition: all 0.3s ease;">
+                            <i class="fas fa-cog me-2"></i>
                             Sistema
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('categories.index') }}"><i class="fas fa-tags me-2"></i>Categories</a></li>
-                            <li><a class="dropdown-item" href="{{ route('brands.index') }}"><i class="fas fa-copyright me-2"></i>Brands</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-chart-bar me-2"></i>Relatórios</a></li>
+                        <ul class="dropdown-menu border-0 shadow-lg" style="border-radius: 1rem; backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.95);" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item py-2 px-3 rounded-3 mx-2 my-1" href="{{ route('categories.index') }}" style="transition: all 0.3s ease;"><i class="fas fa-tags me-2 text-primary"></i>Categorias</a></li>
+                            <li><a class="dropdown-item py-2 px-3 rounded-3 mx-2 my-1" href="{{ route('brands.index') }}" style="transition: all 0.3s ease;"><i class="fas fa-copyright me-2 text-primary"></i>Marcas</a></li>
+                            <li><hr class="dropdown-divider mx-2"></li>
+                            <li><a class="dropdown-item py-2 px-3 rounded-3 mx-2 my-1" href="#" style="transition: all 0.3s ease;"><i class="fas fa-chart-bar me-2 text-primary"></i>Relatórios</a></li>
                         </ul>
                     </li>
                 </ul>

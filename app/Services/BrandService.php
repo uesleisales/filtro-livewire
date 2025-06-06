@@ -60,7 +60,7 @@ class BrandService
         }
     }
 
-    public function findById(int $id): Brand
+    public function findById(string|int $id): Brand
     {
         try {
             $brand = $this->brandRepository->findById($id);
@@ -76,7 +76,23 @@ class BrandService
         }
     }
 
-    public function findByIdAsDTO(int $id): BrandDTO
+    public function findBySlug(string $slug): Brand
+    {
+        try {
+            $brand = $this->brandRepository->findBySlug($slug);
+            if (!$brand) {
+                throw new BrandException('Brand not found');
+            }
+            return $brand;
+        } catch (BrandException $e) {
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Error finding brand by slug', ['slug' => $slug, 'error' => $e->getMessage()]);
+            throw new BrandException('Failed to find brand');
+        }
+    }
+
+    public function findByIdAsDTO(string|int $id): BrandDTO
     {
         try {
             $brand = $this->findById($id);
@@ -89,7 +105,7 @@ class BrandService
         }
     }
 
-    public function update(int $id, array $data): Brand
+    public function update(string|int $id, array $data): Brand
     {
         try {
             $brand = $this->findById($id);
@@ -102,7 +118,7 @@ class BrandService
         }
     }
 
-    public function updateFromDTO(int $id, BrandDTO $dto): BrandDTO
+    public function updateFromDTO(string|int $id, BrandDTO $dto): BrandDTO
     {
         try {
             $brand = $this->findById($id);
@@ -117,7 +133,7 @@ class BrandService
         }
     }
 
-    public function delete(int $id): bool
+    public function delete(string|int $id): bool
     {
         try {
             $brand = $this->findById($id);
