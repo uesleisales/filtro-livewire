@@ -50,7 +50,7 @@ class ProductFilter extends Component
      */
     public function mount()
     {
-        // Carregar categorias e marcas com cache
+        // Carregar categorias e marcas básicas (sem contadores fixos)
         $this->categories = Cache::remember(self::CACHE_CATEGORIES, self::CACHE_TTL, function () {
             return Category::orderBy('name')->get();
         });
@@ -64,6 +64,68 @@ class ProductFilter extends Component
         
         // Inicializar buffer de busca
         $this->searchBuffer = $this->searchName;
+    }
+    
+    /**
+     * Obter categorias com contadores dinâmicos baseados nos filtros atuais
+     */
+    public function getCategoriesWithCountsProperty()
+    {
+        return $this->categories->map(function ($category) {
+            // Criar query base para produtos ativos
+            $query = $this->buildBaseQuery();
+            
+            // Aplicar filtro de categoria específica
+            $query->where('category_id', $category->id);
+            
+            // Aplicar outros filtros ativos (exceto categoria)
+            if (!empty($this->selectedBrands)) {
+                $query->whereIn('brand_id', $this->selectedBrands);
+            }
+            
+            if (!empty($this->searchName)) {
+                $searchTerm = '%' . $this->searchName . '%';
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', $searchTerm)
+                      ->orWhere('description', 'like', $searchTerm)
+                      ->orWhere('sku', 'like', $searchTerm);
+                });
+            }
+            
+            $category->products_count = $query->count();
+            return $category;
+        });
+    }
+    
+    /**
+     * Obter marcas com contadores dinâmicos baseados nos filtros atuais
+     */
+    public function getBrandsWithCountsProperty()
+    {
+        return $this->brands->map(function ($brand) {
+            // Criar query base para produtos ativos
+            $query = $this->buildBaseQuery();
+            
+            // Aplicar filtro de marca específica
+            $query->where('brand_id', $brand->id);
+            
+            // Aplicar outros filtros ativos (exceto marca)
+            if (!empty($this->selectedCategories)) {
+                $query->whereIn('category_id', $this->selectedCategories);
+            }
+            
+            if (!empty($this->searchName)) {
+                $searchTerm = '%' . $this->searchName . '%';
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', $searchTerm)
+                      ->orWhere('description', 'like', $searchTerm)
+                      ->orWhere('sku', 'like', $searchTerm);
+                });
+            }
+            
+            $brand->products_count = $query->count();
+            return $brand;
+        });
     }
     
     /**
@@ -297,6 +359,8 @@ class ProductFilter extends Component
             'hasActiveFilters' => $this->hasActiveFilters,
             'perPageOptions' => $this->perPageOptions,
             'filterUrl' => $this->filterUrl,
+            'categories' => $this->categoriesWithCounts,
+            'brands' => $this->brandsWithCounts,
         ]);
     }
 }

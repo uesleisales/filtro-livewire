@@ -50,7 +50,16 @@ class ProductFactory extends Factory
             'sku' => strtoupper($this->faker->bothify('??###??')),
             'stock' => $this->faker->numberBetween(0, 100),
             'active' => $this->faker->boolean(85), // 85% chance de estar ativo
-            'image' => $this->faker->optional(0.8)->imageUrl(400, 400, 'technics', true),
+            'image' => $this->faker->optional(0.8)->randomElement([
+                'https://via.placeholder.com/400x400/0066CC/FFFFFF?text=Produto+1',
+                'https://via.placeholder.com/400x400/FF6600/FFFFFF?text=Produto+2',
+                'https://via.placeholder.com/400x400/009900/FFFFFF?text=Produto+3',
+                'https://via.placeholder.com/400x400/CC0066/FFFFFF?text=Produto+4',
+                'https://via.placeholder.com/400x400/6600CC/FFFFFF?text=Produto+5',
+                'https://via.placeholder.com/400x400/CC6600/FFFFFF?text=Produto+6',
+                'https://via.placeholder.com/400x400/0099CC/FFFFFF?text=Produto+7',
+                'https://via.placeholder.com/400x400/CC9900/FFFFFF?text=Produto+8'
+            ]),
             // category_id e brand_id serão definidos no seeder
         ];
     }

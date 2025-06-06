@@ -273,7 +273,9 @@
 
                     {{-- Paginação --}}
                     <div class="d-flex justify-content-center mt-4">
-                        {{ $products->links() }}
+                        <div class="pagination-wrapper">
+                            {{ $products->links('custom.pagination') }}
+                        </div>
                     </div>
                     
                     {{-- Informações sobre URL persistente --}}
@@ -320,36 +322,74 @@
     </div>
 </div>
 
-{{-- Scripts para funcionalidades adicionais --}}
+@push('scripts')
+{{-- Scripts customizados --}}
 <script>
-    function copyFilterUrl() {
-        const filterUrl = document.getElementById('filterUrl');
-        if (filterUrl) {
-            filterUrl.select();
-            document.execCommand('copy');
+    // Função para copiar link com filtros
+    function copyFiltersLink() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentUrl = window.location.origin + window.location.pathname;
+        
+        // Se há parâmetros, incluir na URL
+        if (urlParams.toString()) {
+            const fullUrl = currentUrl + '?' + urlParams.toString();
             
-            // Mostrar toast de confirmação
-            const toast = document.createElement('div');
-            toast.className = 'position-fixed bottom-0 end-0 p-3';
-            toast.style.zIndex = '5';
-            toast.innerHTML = `
-                <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-                    <div class="toast-header bg-success text-white">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <strong class="me-auto">Sucesso</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" onclick="this.parentElement.parentElement.parentElement.remove()"></button>
+            // Copiar para clipboard
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                // Mostrar toast de sucesso
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed bottom-0 end-0 p-3';
+                toast.style.zIndex = '5';
+                toast.innerHTML = `
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-success text-white">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong class="me-auto">Sucesso</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" onclick="this.parentElement.parentElement.parentElement.remove()"></button>
+                        </div>
+                        <div class="toast-body">
+                            Link com filtros copiado para a área de transferência!
+                        </div>
                     </div>
-                    <div class="toast-body">
-                        Link com filtros copiado para a área de transferência!
+                `;
+                document.body.appendChild(toast);
+                
+                // Remover toast após 3 segundos
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            }).catch(() => {
+                // Fallback para navegadores mais antigos
+                const tempInput = document.createElement('input');
+                tempInput.value = fullUrl;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                
+                // Mostrar toast
+                const toast = document.createElement('div');
+                toast.className = 'position-fixed bottom-0 end-0 p-3';
+                toast.style.zIndex = '5';
+                toast.innerHTML = `
+                    <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="toast-header bg-success text-white">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <strong class="me-auto">Sucesso</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" onclick="this.parentElement.parentElement.parentElement.remove()"></button>
+                        </div>
+                        <div class="toast-body">
+                            Link com filtros copiado para a área de transferência!
+                        </div>
                     </div>
-                </div>
-            `;
-            document.body.appendChild(toast);
-            
-            // Remover toast após 3 segundos
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
+                `;
+                document.body.appendChild(toast);
+                
+                // Remover toast após 3 segundos
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            });
         } else {
             // Se não houver input (caso de nenhum filtro ativo), copiar URL atual
             const tempInput = document.createElement('input');
@@ -402,7 +442,9 @@
         });
     });
 </script>
+@endpush
 
+@push('styles')
 {{-- Estilos customizados --}}
 <style>
 .product-card {
@@ -426,4 +468,104 @@
 [wire\:loading] {
     opacity: 0.7;
 }
+
+/* Estilos customizados para paginação */
+.pagination-wrapper {
+    width: 100%;
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.per-page-selector .form-select {
+    min-width: 140px;
+    font-size: 0.875rem;
+}
+
+.pagination-custom {
+    --bs-pagination-padding-x: 0.75rem;
+    --bs-pagination-padding-y: 0.5rem;
+    --bs-pagination-font-size: 0.875rem;
+    --bs-pagination-color: #0d6efd;
+    --bs-pagination-bg: #fff;
+    --bs-pagination-border-width: 1px;
+    --bs-pagination-border-color: #dee2e6;
+    --bs-pagination-border-radius: 0.375rem;
+    --bs-pagination-hover-color: #0a58ca;
+    --bs-pagination-hover-bg: #e9ecef;
+    --bs-pagination-hover-border-color: #dee2e6;
+    --bs-pagination-focus-color: #0a58ca;
+    --bs-pagination-focus-bg: #e9ecef;
+    --bs-pagination-focus-box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    --bs-pagination-active-color: #fff;
+    --bs-pagination-active-bg: #0d6efd;
+    --bs-pagination-active-border-color: #0d6efd;
+    --bs-pagination-disabled-color: #6c757d;
+    --bs-pagination-disabled-bg: #fff;
+    --bs-pagination-disabled-border-color: #dee2e6;
+}
+
+.pagination-custom .page-link {
+    border: none;
+    margin: 0 2px;
+    border-radius: 0.375rem !important;
+    transition: all 0.2s ease-in-out;
+    font-weight: 500;
+}
+
+.pagination-custom .page-item.active .page-link {
+    background-color: var(--bs-pagination-active-bg);
+    border-color: var(--bs-pagination-active-border-color);
+    color: var(--bs-pagination-active-color);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
+}
+
+.pagination-custom .page-link:hover {
+    background-color: var(--bs-pagination-hover-bg);
+    border-color: var(--bs-pagination-hover-border-color);
+    color: var(--bs-pagination-hover-color);
+    transform: translateY(-1px);
+}
+
+.pagination-custom .page-item.disabled .page-link {
+    background-color: var(--bs-pagination-disabled-bg);
+    border-color: var(--bs-pagination-disabled-border-color);
+    color: var(--bs-pagination-disabled-color);
+    opacity: 0.6;
+}
+
+.pagination-custom .page-link i {
+    font-size: 0.75rem;
+}
+
+/* Responsividade para paginação */
+@media (max-width: 576px) {
+    .pagination-info {
+        font-size: 0.75rem;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .per-page-selector {
+        text-align: center;
+    }
+    
+    .per-page-selector .form-select {
+        min-width: 120px;
+        font-size: 0.75rem;
+    }
+    
+    .pagination-custom {
+        --bs-pagination-padding-x: 0.5rem;
+        --bs-pagination-padding-y: 0.375rem;
+        --bs-pagination-font-size: 0.75rem;
+    }
+    
+    .pagination-custom .page-link {
+        margin: 0 1px;
+    }
+}
 </style>
+@endpush
