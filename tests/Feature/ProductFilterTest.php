@@ -70,8 +70,8 @@ class ProductFilterTest extends TestCase
     {
         Livewire::test(ProductFilter::class)
             ->assertStatus(200)
-            ->assertSee('Filtros de Busca')
-            ->assertSee('Buscar por nome do produto')
+            ->assertSee('Filtros Avançados')
+            ->assertSee('Buscar por Nome do Produto')
             ->assertSee('Categorias')
             ->assertSee('Marcas');
     }
